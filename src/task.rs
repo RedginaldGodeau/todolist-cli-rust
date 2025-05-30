@@ -35,7 +35,6 @@ pub struct Task {
     pub description: String,
     pub priority: u32,
     pub status: Status,
-    pub create_at: time_t,
     pub date: time_t,
 }
 
@@ -46,13 +45,12 @@ pub fn schema(conn: &Connection) -> Result<()> {
     description TEXT NOT NULL,
     priority INTEGER NOT NULL,
     status TEXT NOT NULL CHECK(status IN ('Completed', 'InProgress', 'Pending', 'Cancelled')),
-    create_at INTEGER NOT NULL,
     date INTEGER NOT NULL
 );", [])?;
     Ok(())
 }
 
-pub fn create_task(conn: &Connection, name: String, description: String, date: time_t, priority: u32, status: Status) -> Result<()> {
+pub fn create_task(conn: &Connection, name: String, description: String, priority: u32, status: Status) -> Result<()> {
     let current_time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -61,15 +59,15 @@ pub fn create_task(conn: &Connection, name: String, description: String, date: t
     let status_str= to_string(status);
 
     conn.execute(
-        "INSERT INTO tasks (name, description, priority, status, create_at, date) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        params![name, description, priority, status_str, current_time, date],
+        "INSERT INTO tasks (name, description, priority, status, date) VALUES (?1, ?2, ?3, ?4, ?5)",
+        params![name, description, priority, status_str, current_time],
     )?;
 
     Ok(())
 }
 
 pub fn select_all(conn: &Connection) -> Result<Vec<Task>> {
-    let mut stmt = conn.prepare("SELECT id, name, description, priority, status, create_at, date FROM tasks")?;
+    let mut stmt = conn.prepare("SELECT id, name, description, priority, status, date FROM tasks")?;
 
     let task_iter = stmt.query_map([], |row| {
         let status_str: String = row.get(4)?;
@@ -81,8 +79,7 @@ pub fn select_all(conn: &Connection) -> Result<Vec<Task>> {
             description: row.get(2)?,
             priority: row.get(3)?,
             status,
-            create_at: row.get(5)?,
-            date: row.get(6)?,
+            date: row.get(5)?,
         })
     })?;
 
@@ -103,7 +100,7 @@ pub fn update_status_task(conn: &Connection, id: i32, status: Status) -> Result<
     let status_str = to_string(status);
     conn.execute(
         "UPDATE tasks SET status = ?1 WHERE id = ?2",
-        [&status_str, &&**&id.to_string()],
+        [&status_str, &&*(id.to_string())],
     )?;
     Ok(())
 }

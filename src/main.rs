@@ -1,5 +1,5 @@
-use std::os::unix::raw::time_t;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, UNIX_EPOCH};
+use chrono::{DateTime, Local};
 
 mod form;
 mod database;
@@ -19,35 +19,41 @@ fn main() {
     while starting {
         let tasks = match task::select_all(&conn) {
             Ok(tasks) => tasks,
-            Err(_) => return
+            Err(err) => { println!("{}", err); return;}
         };
 
-        print!("{}[2J", 27 as char);
-        print!("ID\t| Nom\t| Description\t| Priorité\t| Status\n");
+        println!("{}[2J", 27 as char);
+        println!("ID\t| Nom\t| Description\t| Priorité\t| Status\t| Date\n");
         for task in tasks {
-            println!("{}\t| {}\t| {}\t| {}\t\t| {}\n", task.id, task.name, task.description, task.priority, task::to_string(task.status));
+            let system_time = UNIX_EPOCH + Duration::from_secs(task.date as u64);
+            let datetime: DateTime<Local> = system_time.into();
+            println!("{}\t| {}\t| {}\t| {}\t\t| {}\t| {}", task.id, task.name, task.description, task.priority, task::to_string(task.status), datetime.format("%d-%m-%Y").to_string());
         }
-        print!("-------------------------------------------\n");
+        println!("-------------------------------------------");
         match form::select_action_form() {
             form::Action::Nothing => {}
             form::Action::Quit => starting = false,
             form::Action::Delete => {
                 let task_id = form::delete_task_form();
-                task::delete_task(&conn, task_id);
+                match task::delete_task(&conn, task_id) {
+                    Ok(_) => {},
+                    Err(err) => {println!("{}", err); return;}
+                };
             }
             form::Action::Add => {
                 let task_form = form::adding_task_form();
-                let current_time = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs() as time_t;
-                let _ = task::create_task(&conn, task_form.name, task_form.description, current_time, task_form.priority, task::Status::Pending);
+                match task::create_task(&conn, task_form.name, task_form.description, task_form.priority, task::Status::Pending) {
+                    Ok(_) => {},
+                    Err(err) => {println!("{}", err); return;}
+                };
             }
             form::Action::ChangeStatus => {
                 let task_form = form::change_status_form();
-                let _ = task::update_status_task(&conn, task_form.id, task_form.status);
+                match task::update_status_task(&conn, task_form.id, task_form.status) {
+                    Ok(_) => {},
+                    Err(err) => {println!("{}", err); return;}
+                };
             }
-            _ => {}
         }
 
     }
