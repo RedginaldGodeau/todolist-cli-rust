@@ -1,5 +1,3 @@
-Absolument \! Voici le fichier `README.md` pour votre application de liste de tâches en Rust avec SQLite, entièrement en français :
-
 -----
 
 # Liste de tâches en Rust avec SQLite
