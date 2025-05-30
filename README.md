@@ -33,11 +33,9 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 1.  **Cloner le dépôt :**
 
     ```bash
-    git clone <url_du_depot>
-    cd <nom_du_depot>
+    git clone https://github.com/RedginaldGodeau/todolist-cli-rust
+    cd todolist-cli-rust
     ```
-
-    (Remplacez `<url_du_depot>` et `<nom_du_depot>` par les informations réelles de votre dépôt.)
 
 2.  **Compiler l'application :**
 
@@ -52,10 +50,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 Après la compilation, vous pouvez exécuter l'application directement depuis votre terminal :
 
 ```bash
-./target/release/nom_de_votre_app_todo
+./target/release/ToDo
 ```
-
-(Remplacez `nom_de_votre_app_todo` par le nom réel de votre exécutable, qui sera par défaut le nom de votre répertoire de projet.)
 
 -----
 
@@ -79,31 +75,9 @@ Lorsque vous exécutez l'application, vous verrez une liste de vos tâches actue
 
 -----
 
-## Contribuer
-
-Les contributions sont les bienvenues \! Si vous avez des suggestions d'améliorations ou de nouvelles fonctionnalités, n'hésitez pas à :
-
-1.  Forker le dépôt.
-2.  Créer une nouvelle branche (`git checkout -b feature/VotreFonctionnalite`).
-3.  Apporter vos modifications.
-4.  Commettre vos modifications (`git commit -m 'Ajout d'une fonctionnalité'`).
-5.  Pousser vers la branche (`git push origin feature/VotreFonctionnalite`).
-6.  Ouvrir une demande de tirage (Pull Request).
-
------
-
-## Licence
-
-Ce projet est sous licence MIT - consultez le fichier `LICENSE` pour plus de détails.
-(Vous devrez créer un fichier `LICENSE` si ce n'est pas déjà fait et y ajouter le texte de la licence MIT.)
-
------
-
 ## Remerciements
 
 * [Langage de programmation Rust](https://www.rust-lang.org/)
 * [SQLite](https://www.sqlite.org/index.html)
 
 -----
-
-J'espère que ce `README.md` vous sera utile \! N'hésitez pas si vous souhaitez des ajustements ou des sections supplémentaires.
